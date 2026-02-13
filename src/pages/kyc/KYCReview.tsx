@@ -63,18 +63,18 @@ export const KYCReview = () => {
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 bg-white z-50 px-4 py-4 border-b border-neutral-200">
-        <div className="max-w-[428px] mx-auto flex items-center justify-between">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button onClick={() => navigate(-1)} className="text-[#0F2A44]">
             <ArrowLeft size={24} />
           </button>
-          <h1 className="text-lg font-medium text-[#0F2A44]">Step 4 of 4</h1>
+          <h1 className="text-base sm:text-lg font-medium text-[#0F2A44]">Step 4 of 4</h1>
           <div className="w-6" />
         </div>
       </div>
 
       {/* Progress Dots */}
       <div className="fixed top-16 left-0 right-0 bg-white z-40 px-4 py-4">
-        <div className="max-w-[428px] mx-auto flex justify-center gap-2">
+        <div className="max-w-4xl mx-auto flex justify-center gap-2">
           <div className="w-2 h-2 rounded-full bg-[#0F2A44]" />
           <div className="w-2 h-2 rounded-full bg-[#0F2A44]" />
           <div className="w-2 h-2 rounded-full bg-[#0F2A44]" />
@@ -83,10 +83,10 @@ export const KYCReview = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 pt-28 pb-24 px-6 overflow-y-auto">
-        <div className="max-w-[428px] mx-auto">
-          <h2 className="text-2xl font-semibold text-[#0F2A44] mb-2">Review Your Information</h2>
-          <p className="text-sm text-[#6B7280] mb-6">Please review all details before submitting</p>
+      <div className="flex-1 pt-28 pb-24 px-4 sm:px-6 md:px-8 overflow-y-auto">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-xl sm:text-2xl font-semibold text-[#0F2A44] mb-2">Review Your Information</h2>
+          <p className="text-sm sm:text-base text-[#6B7280] mb-6">Please review all details before submitting</p>
 
           {/* Personal Information */}
           <div className="bg-white border border-neutral-200 rounded-xl p-4 mb-4">
@@ -166,8 +166,8 @@ export const KYCReview = () => {
             </div>
           </div>
 
-          <div className="bg-[#F4F6F8] rounded-lg p-4 mt-6">
-            <p className="text-xs text-[#6B7280] text-center">
+          <div className="bg-[#F4F6F8] rounded-lg p-3 sm:p-4 mt-6">
+            <p className="text-xs sm:text-sm text-[#6B7280] text-center">
               By submitting, you confirm that all information provided is accurate and matches your official documents. False information may result in account suspension.
             </p>
           </div>
@@ -175,12 +175,12 @@ export const KYCReview = () => {
       </div>
 
       {/* Footer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white px-6 py-4 border-t border-neutral-200">
-        <div className="max-w-[428px] mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 bg-white px-4 sm:px-6 py-4 border-t border-neutral-200">
+        <div className="max-w-2xl mx-auto">
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full bg-[#F4B400] hover:bg-[#E5A800] text-white py-4 rounded-lg text-base font-medium transition-colors disabled:opacity-50"
+            className="w-full bg-[#F4B400] hover:bg-[#E5A800] text-white py-3 sm:py-4 rounded-lg text-base sm:text-lg font-medium transition-colors disabled:opacity-50"
           >
             {loading ? 'Submitting...' : 'Submit for Review'}
           </button>
