@@ -92,7 +92,7 @@ export const Rewards = () => {
         <div className="flex max-w-7xl mx-auto">
           <button
             onClick={() => setActiveTab('badges')}
-            className={`flex-1 py-3 sm:py-4 text-xs sm:text-sm ${
+            className={`flex-1 py-5 sm:py-4 text-xs sm:text-sm ${
               activeTab === 'badges'
                 ? 'text-neutral-900 border-b-2 border-neutral-900'
                 : 'text-neutral-500'
@@ -124,7 +124,7 @@ export const Rewards = () => {
       </div>
 
       {/* Content */}
-      <div className="pt-16 px-4 pb-8 max-w-7xl mx-auto">
+      <div className="pt-20 px-4 pb-8 max-w-7xl mx-auto">
         {activeTab === 'badges' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
             {badges.map((badge, index) => {
