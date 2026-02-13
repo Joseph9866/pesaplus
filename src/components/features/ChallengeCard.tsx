@@ -4,6 +4,7 @@ import { Badge } from '../ui/Badge';
 import { ChallengeWithProgress } from '../../types';
 import { Users, Trophy, Calendar } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { useFormattedCurrency } from '../../utils/currency';
 
 interface ChallengeCardProps {
   challenge: ChallengeWithProgress;
@@ -14,14 +15,10 @@ interface ChallengeCardProps {
 export const ChallengeCard = ({ challenge, onJoin, onView }: ChallengeCardProps) => {
   const isParticipating = !!challenge.participant;
   const progress = isParticipating ? challenge.progress_percentage : 0;
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
+  
+  // Format currency amounts
+  const formattedCurrentAmount = useFormattedCurrency(challenge.participant?.current_amount || 0);
+  const formattedTargetAmount = useFormattedCurrency(challenge.target_amount);
 
   const getDaysRemaining = () => {
     const endDate = new Date(challenge.end_date);
@@ -68,7 +65,7 @@ export const ChallengeCard = ({ challenge, onJoin, onView }: ChallengeCardProps)
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-text-secondary">Your Progress</span>
               <span className="text-sm font-medium text-text">
-                {formatCurrency(challenge.participant!.current_amount)} / {formatCurrency(challenge.target_amount)}
+                {formattedCurrentAmount} / {formattedTargetAmount}
               </span>
             </div>
             <LinearProgress percentage={progress} color="#1FA774" />

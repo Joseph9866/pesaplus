@@ -15,6 +15,9 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useFormattedCurrency } from '../utils/currency';
+import { useCurrency } from '../contexts/CurrencyContext';
+import { convertCurrency, formatCurrency } from '../utils/currency';
 
 const goalSchema = z.object({
   title: z.string().min(1, 'Goal title is required'),
@@ -27,12 +30,18 @@ type GoalFormData = z.infer<typeof goalSchema>;
 export const Dashboard = () => {
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
+  const { currency, exchangeRate } = useCurrency();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [depositAmount, setDepositAmount] = useState('');
   const [depositGoalId, setDepositGoalId] = useState<string | null>(null);
+
+  // Format currency values
+  const formattedBalance = useFormattedCurrency(user?.total_balance || 0);
+  const weeklyIncrease = (user?.total_saved || 0) * 0.1;
+  const formattedWeeklyIncrease = useFormattedCurrency(weeklyIncrease);
 
   const {
     register,
@@ -216,11 +225,11 @@ export const Dashboard = () => {
           <div className="mt-8">
             <p className="text-neutral-500 text-xs uppercase tracking-wider mb-2">TOTAL BALANCE</p>
             <h2 className="text-neutral-600 text-3xl mb-1">
-              KES {(user?.total_balance || 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {formattedBalance}
             </h2>
             <p className="text-neutral-500 text-xs flex items-center">
               <span className="mr-1">↗</span>
-              <span>+KES {((user?.total_saved || 0) * 0.1).toFixed(0)} this week</span>
+              <span>+{formattedWeeklyIncrease} this week</span>
             </p>
           </div>
         </div>
@@ -254,6 +263,11 @@ export const Dashboard = () => {
           <div className="space-y-4">
             {goals.map((goal) => {
               const progress = (goal.current_amount / goal.target_amount) * 100;
+              const convertedCurrent = convertCurrency(goal.current_amount, 'KES', currency, exchangeRate);
+              const convertedTarget = convertCurrency(goal.target_amount, 'KES', currency, exchangeRate);
+              const formattedCurrent = formatCurrency(convertedCurrent, currency);
+              const formattedTarget = formatCurrency(convertedTarget, currency);
+              
               return (
                 <div
                   key={goal.id}
@@ -274,7 +288,7 @@ export const Dashboard = () => {
                     />
                   </div>
                   <p className="text-neutral-600 text-sm">
-                    KES {goal.current_amount.toLocaleString()} / KES {goal.target_amount.toLocaleString()}
+                    {formattedCurrent} / {formattedTarget}
                   </p>
                 </div>
               );

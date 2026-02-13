@@ -3,6 +3,7 @@ import { LinearProgress, CircularProgress } from '../ui/ProgressBar';
 import { Goal } from '../../types';
 import * as Icons from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
+import { useFormattedCurrency } from '../../utils/currency';
 
 interface GoalCardProps {
   goal: Goal;
@@ -12,14 +13,10 @@ interface GoalCardProps {
 
 export const GoalCard = ({ goal, onClick, variant = 'linear' }: GoalCardProps) => {
   const percentage = (goal.current_amount / goal.target_amount) * 100;
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
+  
+  // Format currency amounts
+  const formattedCurrentAmount = useFormattedCurrency(goal.current_amount);
+  const formattedTargetAmount = useFormattedCurrency(goal.target_amount);
 
   const getDaysRemaining = () => {
     const deadline = new Date(goal.deadline);
@@ -50,7 +47,7 @@ export const GoalCard = ({ goal, onClick, variant = 'linear' }: GoalCardProps) =
         </div>
         <h3 className="font-semibold text-text mb-1">{goal.title}</h3>
         <p className="text-sm text-text-secondary mb-2">
-          {formatCurrency(goal.current_amount)} of {formatCurrency(goal.target_amount)}
+          {formattedCurrentAmount} of {formattedTargetAmount}
         </p>
         <p className="text-xs text-text-secondary">
           {getDaysRemaining()} days left
@@ -73,7 +70,7 @@ export const GoalCard = ({ goal, onClick, variant = 'linear' }: GoalCardProps) =
             <div className="flex-1">
               <h3 className="font-semibold text-text">{goal.title}</h3>
               <p className="text-sm text-text-secondary mt-1">
-                {formatCurrency(goal.current_amount)} of {formatCurrency(goal.target_amount)}
+                {formattedCurrentAmount} of {formattedTargetAmount}
               </p>
             </div>
             <span className="text-sm font-medium text-text-secondary">

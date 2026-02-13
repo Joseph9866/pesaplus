@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import { Splash } from './pages/Splash';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
@@ -58,8 +59,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Splash />} />
+        <CurrencyProvider>
+          <Routes>
+            <Route path="/" element={<Splash />} />
 
           <Route
             path="/login"
@@ -216,6 +218,7 @@ function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </CurrencyProvider>
       </AuthProvider>
     </BrowserRouter>
   );

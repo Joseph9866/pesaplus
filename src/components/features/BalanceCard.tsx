@@ -1,6 +1,7 @@
 import { Card } from '../ui/Card';
 import { ArrowUpRight, ArrowDownRight, Plus } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { useFormattedCurrency } from '../../utils/currency';
 
 interface BalanceCardProps {
   totalBalance: number;
@@ -9,20 +10,16 @@ interface BalanceCardProps {
 }
 
 export const BalanceCard = ({ totalBalance, totalSaved, onDeposit }: BalanceCardProps) => {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
+  const formattedBalance = useFormattedCurrency(totalBalance);
+  const formattedSaved = useFormattedCurrency(totalSaved);
+  const formattedAvailable = useFormattedCurrency(totalBalance - totalSaved);
 
   return (
     <Card className="bg-gradient-to-br from-primary to-primary/80 text-white">
       <div className="space-y-4">
         <div>
           <p className="text-white/80 text-sm">Total Balance</p>
-          <h2 className="text-4xl font-bold mt-1">{formatCurrency(totalBalance)}</h2>
+          <h2 className="text-4xl font-bold mt-1">{formattedBalance}</h2>
         </div>
 
         <div className="flex gap-4">
@@ -32,7 +29,7 @@ export const BalanceCard = ({ totalBalance, totalSaved, onDeposit }: BalanceCard
               <span>Saved</span>
             </div>
             <p className="text-xl font-semibold mt-1 text-secondary">
-              {formatCurrency(totalSaved)}
+              {formattedSaved}
             </p>
           </div>
           <div className="flex-1">
@@ -41,7 +38,7 @@ export const BalanceCard = ({ totalBalance, totalSaved, onDeposit }: BalanceCard
               <span>Available</span>
             </div>
             <p className="text-xl font-semibold mt-1">
-              {formatCurrency(totalBalance - totalSaved)}
+              {formattedAvailable}
             </p>
           </div>
         </div>

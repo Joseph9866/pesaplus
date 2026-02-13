@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 import { SideNav } from '../components/layout/SideNav';
 import { Header } from '../components/layout/Header';
+import { CurrencyModal } from '../components/CurrencyModal';
 import {
   User,
   CreditCard,
@@ -22,9 +24,11 @@ import {
 export const Settings = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { currency } = useCurrency();
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [biometricEnabled, setBiometricEnabled] = useState(true);
   const [isSideNavOpen, setIsSideNavOpen] = useState(false);
+  const [showCurrencyModal, setShowCurrencyModal] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -140,10 +144,7 @@ export const Settings = () => {
               </div>
             </button>
             <button
-              onClick={() => {
-                // TODO: Navigate to currency settings page
-                console.log('Navigate to Currency Settings');
-              }}
+              onClick={() => setShowCurrencyModal(true)}
               className="w-full flex items-center justify-between px-4 py-3 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
@@ -151,7 +152,7 @@ export const Settings = () => {
                 <span className="ml-3 text-sm text-neutral-900">Currency</span>
               </div>
               <div className="flex items-center">
-                <span className="text-sm text-neutral-500 mr-2">KES</span>
+                <span className="text-sm text-neutral-500 mr-2">{currency}</span>
                 <ChevronRight className="text-neutral-400" size={16} />
               </div>
             </button>
@@ -268,6 +269,12 @@ export const Settings = () => {
           </button>
         </div>
       </main>
+
+      {/* Currency Modal */}
+      <CurrencyModal 
+        isOpen={showCurrencyModal} 
+        onClose={() => setShowCurrencyModal(false)} 
+      />
     </div>
   );
 };

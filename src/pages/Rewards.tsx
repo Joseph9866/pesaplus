@@ -5,6 +5,7 @@ import { LotteryEntry } from '../types';
 import { Trophy, Ticket, Clock, Gift, Sparkles, Target, Star, Lock, HelpCircle, Crown, Medal, Gem, Flame, Rocket, Shield, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Layout } from '../components/layout/Layout';
+import { useFormattedCurrency } from '../utils/currency';
 
 type TabType = 'badges' | 'leaderboard' | 'lottery';
 
@@ -13,6 +14,18 @@ export const Rewards = () => {
   const [activeTab, setActiveTab] = useState<TabType>('badges');
   const [entries, setEntries] = useState<LotteryEntry[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Format leaderboard amounts using the currency hook
+  const leaderboardAmount1 = useFormattedCurrency(125000, 'KES');
+  const leaderboardAmount2 = useFormattedCurrency(98500, 'KES');
+  const leaderboardAmount3 = useFormattedCurrency(87200, 'KES');
+  const leaderboardAmount4 = useFormattedCurrency(76800, 'KES');
+  const leaderboardAmount5 = useFormattedCurrency(65400, 'KES');
+
+  // Format prize amounts using the currency hook
+  const prize1st = useFormattedCurrency(100000, 'KES');
+  const prize2nd = useFormattedCurrency(50000, 'KES');
+  const prize3rd = useFormattedCurrency(25000, 'KES');
 
   useEffect(() => {
     fetchEntries();
@@ -51,11 +64,11 @@ export const Rewards = () => {
   ];
 
   const leaderboardData = [
-    { rank: 1, name: 'Sarah M.', amount: 'KES 125,000', avatar: '👩' },
-    { rank: 2, name: 'John K.', amount: 'KES 98,500', avatar: '👨' },
-    { rank: 3, name: 'Mary W.', amount: 'KES 87,200', avatar: '👩' },
-    { rank: 4, name: 'David O.', amount: 'KES 76,800', avatar: '👨' },
-    { rank: 5, name: 'Grace N.', amount: 'KES 65,400', avatar: '👩' },
+    { rank: 1, name: 'Sarah M.', amount: leaderboardAmount1, avatar: '👩' },
+    { rank: 2, name: 'John K.', amount: leaderboardAmount2, avatar: '👨' },
+    { rank: 3, name: 'Mary W.', amount: leaderboardAmount3, avatar: '👩' },
+    { rank: 4, name: 'David O.', amount: leaderboardAmount4, avatar: '👨' },
+    { rank: 5, name: 'Grace N.', amount: leaderboardAmount5, avatar: '👩' },
   ];
 
   const getNextDrawDate = () => {
@@ -223,15 +236,15 @@ export const Rewards = () => {
               </div>
               <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                 <div className="text-center p-2 sm:p-3 md:p-4 bg-[#F4B400]/10 rounded-xl">
-                  <p className="text-base sm:text-lg md:text-xl font-bold text-[#F4B400] mb-1">KES 100K</p>
+                  <p className="text-base sm:text-lg md:text-xl font-bold text-[#F4B400] mb-1">{prize1st}</p>
                   <p className="text-[10px] sm:text-xs text-neutral-600">1st Prize</p>
                 </div>
                 <div className="text-center p-2 sm:p-3 md:p-4 bg-neutral-100 rounded-xl">
-                  <p className="text-base sm:text-lg md:text-xl font-bold text-neutral-900 mb-1">KES 50K</p>
+                  <p className="text-base sm:text-lg md:text-xl font-bold text-neutral-900 mb-1">{prize2nd}</p>
                   <p className="text-[10px] sm:text-xs text-neutral-600">2nd Prize</p>
                 </div>
                 <div className="text-center p-2 sm:p-3 md:p-4 bg-neutral-100 rounded-xl">
-                  <p className="text-base sm:text-lg md:text-xl font-bold text-neutral-900 mb-1">KES 25K</p>
+                  <p className="text-base sm:text-lg md:text-xl font-bold text-neutral-900 mb-1">{prize3rd}</p>
                   <p className="text-[10px] sm:text-xs text-neutral-600">3rd Prize</p>
                 </div>
               </div>

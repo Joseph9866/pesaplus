@@ -14,10 +14,32 @@ import { Goal, Transaction } from '../types';
 import { Calendar, TrendingUp, History, Plus, Settings } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
+import { useFormattedCurrency } from '../utils/currency';
+import { useCurrency } from '../contexts/CurrencyContext';
+import { convertCurrency } from '../utils/currency';
+
+const TransactionItem = ({ transaction, formatDate }: { transaction: Transaction; formatDate: (date: string) => string }) => {
+  const formattedAmount = useFormattedCurrency(transaction.amount);
+  
+  return (
+    <div className="flex items-center justify-between py-3 border-b last:border-b-0">
+      <div>
+        <p className="font-medium text-text">{transaction.description}</p>
+        <p className="text-sm text-text-secondary">
+          {formatDate(transaction.created_at)}
+        </p>
+      </div>
+      <p className="font-semibold text-secondary">
+        +{formattedAmount}
+      </p>
+    </div>
+  );
+};
 
 export const GoalDetail = () => {
   const { id } = useParams();
   const { user, refreshUser } = useAuth();
+  const { currency, exchangeRate } = useCurrency();
   const [goal, setGoal] = useState<Goal | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,12 +80,14 @@ export const GoalDetail = () => {
     if (!depositAmount || !goal || parseFloat(depositAmount) <= 0) return;
 
     try {
-      const amount = parseFloat(depositAmount);
+      // Convert the entered amount from user's currency to KES (base currency)
+      const amountInUserCurrency = parseFloat(depositAmount);
+      const amountInKES = convertCurrency(amountInUserCurrency, currency, 'KES', exchangeRate);
 
       await supabase
         .from('goals')
         .update({
-          current_amount: goal.current_amount + amount,
+          current_amount: goal.current_amount + amountInKES,
         })
         .eq('id', goal.id);
 
@@ -72,7 +96,7 @@ export const GoalDetail = () => {
         .insert({
           user_id: user?.id,
           goal_id: goal.id,
-          amount,
+          amount: amountInKES,
           type: 'deposit',
           description: `Deposit to ${goal.title}`,
         });
@@ -80,8 +104,8 @@ export const GoalDetail = () => {
       await supabase
         .from('user_profiles')
         .update({
-          total_balance: (user?.total_balance || 0) + amount,
-          total_saved: (user?.total_saved || 0) + amount,
+          total_balance: (user?.total_balance || 0) + amountInKES,
+          total_saved: (user?.total_saved || 0) + amountInKES,
         })
         .eq('id', user?.id);
 
@@ -92,14 +116,6 @@ export const GoalDetail = () => {
     } catch (error) {
       console.error('Error depositing:', error);
     }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-      minimumFractionDigits: 0,
-    }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
@@ -144,6 +160,16 @@ export const GoalDetail = () => {
 
   const percentage = (goal.current_amount / goal.target_amount) * 100;
   const IconComponent = (Icons[goal.icon as keyof typeof Icons] || Icons.Target) as LucideIcon;
+  
+  // Format currency amounts using the hook
+  const formattedCurrentAmount = useFormattedCurrency(goal.current_amount);
+  const formattedTargetAmount = useFormattedCurrency(goal.target_amount);
+  const formattedRemainingAmount = useFormattedCurrency(goal.target_amount - goal.current_amount);
+  
+  // Quick-add amounts in user's current currency
+  const quickAddAmounts = [100, 500, 1000].map(kesAmount => 
+    convertCurrency(kesAmount, 'KES', currency, exchangeRate)
+  );
 
   return (
     <Layout showBack title={goal.title}>
@@ -166,7 +192,7 @@ export const GoalDetail = () => {
                 </div>
                 <h2 className="text-2xl font-bold text-text mb-2">{goal.title}</h2>
                 <p className="text-lg text-text-secondary mb-4">
-                  {formatCurrency(goal.current_amount)} of {formatCurrency(goal.target_amount)}
+                  {formattedCurrentAmount} of {formattedTargetAmount}
                 </p>
                 <div className="flex gap-2 justify-center">
                   <Badge variant="info">
@@ -190,7 +216,7 @@ export const GoalDetail = () => {
               <TrendingUp className="w-8 h-8 text-secondary mx-auto mb-2" />
               <p className="text-sm text-text-secondary mb-1">Remaining</p>
               <p className="font-semibold text-text">
-                {formatCurrency(goal.target_amount - goal.current_amount)}
+                {formattedRemainingAmount}
               </p>
             </Card>
             <Card className="text-center">
@@ -215,20 +241,11 @@ export const GoalDetail = () => {
             {transactions.length > 0 ? (
               <div className="space-y-3">
                 {transactions.map((transaction) => (
-                  <div
+                  <TransactionItem 
                     key={transaction.id}
-                    className="flex items-center justify-between py-3 border-b last:border-b-0"
-                  >
-                    <div>
-                      <p className="font-medium text-text">{transaction.description}</p>
-                      <p className="text-sm text-text-secondary">
-                        {formatDate(transaction.created_at)}
-                      </p>
-                    </div>
-                    <p className="font-semibold text-secondary">
-                      +{formatCurrency(transaction.amount)}
-                    </p>
-                  </div>
+                    transaction={transaction}
+                    formatDate={formatDate}
+                  />
                 ))}
               </div>
             ) : (
@@ -252,13 +269,13 @@ export const GoalDetail = () => {
             onChange={(e) => setDepositAmount(e.target.value)}
           />
           <div className="grid grid-cols-3 gap-2">
-            {[100, 500, 1000].map((amount) => (
+            {quickAddAmounts.map((amount, index) => (
               <Button
-                key={amount}
+                key={index}
                 variant="secondary"
                 onClick={() => setDepositAmount(amount.toString())}
               >
-                +{amount}
+                +{Math.round(amount)}
               </Button>
             ))}
           </div>
