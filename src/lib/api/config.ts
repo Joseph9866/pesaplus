@@ -50,6 +50,17 @@ export const API_ENDPOINTS = {
     list: `${API_URL}/users/api/users/`,
     detail: (id: string) => `${API_URL}/users/api/users/${id}/`,
   },
+  
+  // Goals - Update this path based on your backend
+  goals: {
+    list: `${API_URL}/goals/`,
+    detail: (id: string) => `${API_URL}/goals/${id}/`,
+    create: `${API_URL}/goals/`,
+    update: (id: string) => `${API_URL}/goals/${id}/`,
+    delete: (id: string) => `${API_URL}/goals/${id}/`,
+    addFunds: (id: string) => `${API_URL}/goals/${id}/add_funds/`,
+    withdrawFunds: (id: string) => `${API_URL}/goals/${id}/withdraw_funds/`,
+  },
 } as const;
 
 // Request timeout (30 seconds)
@@ -60,3 +71,4 @@ export const TOKEN_KEYS = {
   access: 'access_token',
   refresh: 'refresh_token',
 } as const;
+

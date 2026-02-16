@@ -7,10 +7,11 @@ interface LayoutProps {
   children: ReactNode;
   title?: string;
   showBack?: boolean;
+  backPath?: string;
   showNotifications?: boolean;
 }
 
-export const Layout = ({ children, title, showBack, showNotifications }: LayoutProps) => {
+export const Layout = ({ children, title, showBack, backPath, showNotifications }: LayoutProps) => {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false);
 
   return (
@@ -19,7 +20,8 @@ export const Layout = ({ children, title, showBack, showNotifications }: LayoutP
       <div className="w-full">
         <Header 
           title={title} 
-          showBack={showBack} 
+          showBack={showBack}
+          backPath={backPath}
           showNotifications={showNotifications}
           onMenuClick={() => setIsSideNavOpen(true)}
         />

@@ -88,65 +88,65 @@ export const Signup = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#0F2A44] flex items-center justify-center p-4">
-      <div className="w-full max-w-[428px] bg-white rounded-3xl shadow-2xl px-6 py-8 overflow-y-auto max-h-[90vh]">
+    <div className="w-full min-h-screen bg-gradient-to-br from-[#0F2A44] to-[#1a3a5c] flex items-center justify-center p-8">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
         {/* Header */}
-        <header className="text-center mb-6">
-          <h1 className="text-2xl text-[#0F2A44] mb-2 font-bold">Welcome to PesaPlus</h1>
-          <p className="text-sm text-[#8A8F98]">Create your account to start saving</p>
+        <header className="text-center mb-8">
+          <h1 className="text-3xl text-[#0F2A44] mb-2 font-bold">Welcome to PesaPlus</h1>
+          <p className="text-base text-[#8A8F98]">Create your account to start saving</p>
         </header>
 
       {/* Social Login Section To be updated later*/}
            
       {/* Signup Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm">
+          <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-200">
             {error}
           </div>
         )}
 
         {/* Full Name */}
         <div>
-          <label htmlFor="fullName" className="block text-sm text-[#8A8F98] mb-1">
+          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
             Full Name
           </label>
           <input
             type="text"
             id="fullName"
             placeholder="John Doe"
-            className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F2A44] focus:border-transparent ${
-              errors.fullName ? 'border-red-500' : 'border-neutral-300'
+            className={`w-full h-11 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F2A44] focus:border-transparent transition-all ${
+              errors.fullName ? 'border-red-500' : 'border-gray-300'
             }`}
             {...register('fullName')}
           />
           {errors.fullName && (
-            <p className="text-red-500 text-xs mt-1">{errors.fullName.message}</p>
+            <p className="text-red-500 text-sm mt-1.5">{errors.fullName.message}</p>
           )}
         </div>
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm text-[#8A8F98] mb-1">
-            Email
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            Email Address
           </label>
           <input
             type="email"
             id="email"
             placeholder="your@email.com"
-            className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F2A44] focus:border-transparent ${
-              errors.email ? 'border-red-500' : 'border-neutral-300'
+            className={`w-full h-11 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F2A44] focus:border-transparent transition-all ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
             }`}
             {...register('email')}
           />
           {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+            <p className="text-red-500 text-sm mt-1.5">{errors.email.message}</p>
           )}
         </div>
 
         {/* Password */}
         <div>
-          <label htmlFor="password" className="block text-sm text-[#8A8F98] mb-1">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
             Password
           </label>
           <div className="relative">
@@ -154,27 +154,27 @@ export const Signup = () => {
               type={showPassword ? 'text' : 'password'}
               id="password"
               placeholder="••••••••"
-              className={`w-full h-12 px-4 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F2A44] focus:border-transparent ${
-                errors.password ? 'border-red-500' : 'border-neutral-300'
+              className={`w-full h-11 px-4 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F2A44] focus:border-transparent transition-all ${
+                errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
               {...register('password')}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A8F98] cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
           {errors.password && (
-            <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+            <p className="text-red-500 text-sm mt-1.5">{errors.password.message}</p>
           )}
         </div>
 
         {/* Confirm Password */}
         <div>
-          <label htmlFor="confirm-password" className="block text-sm text-[#8A8F98] mb-1">
+          <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-2">
             Confirm Password
           </label>
           <div className="relative">
@@ -182,55 +182,55 @@ export const Signup = () => {
               type={showConfirmPassword ? 'text' : 'password'}
               id="confirm-password"
               placeholder="••••••••"
-              className={`w-full h-12 px-4 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F2A44] focus:border-transparent ${
-                errors.confirmPassword ? 'border-red-500' : 'border-neutral-300'
+              className={`w-full h-11 px-4 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F2A44] focus:border-transparent transition-all ${
+                errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
               }`}
               {...register('confirmPassword')}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A8F98] cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
             >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>
+            <p className="text-red-500 text-sm mt-1.5">{errors.confirmPassword.message}</p>
           )}
         </div>
 
         {/* Terms Checkbox */}
-        <div className="flex items-start mt-4">
+        <div className="flex items-start pt-2">
           <input
             type="checkbox"
             id="terms"
-            className="w-4 h-4 mt-0.5 border-neutral-300 rounded focus:ring-[#0F2A44]"
+            className="w-4 h-4 mt-1 border-gray-300 rounded focus:ring-[#0F2A44] text-[#0F2A44]"
             {...register('terms')}
           />
-          <label htmlFor="terms" className="ml-2 text-xs text-[#2E2E2E]">
-            I agree to Terms & Privacy Policy
+          <label htmlFor="terms" className="ml-3 text-sm text-gray-600">
+            I agree to the Terms & Conditions and Privacy Policy
           </label>
         </div>
         {errors.terms && (
-          <p className="text-red-500 text-xs mt-1">{errors.terms.message}</p>
+          <p className="text-red-500 text-sm mt-1">{errors.terms.message}</p>
         )}
 
         {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-14 bg-[#F4B400] text-white rounded-lg mt-6 hover:bg-[#E5A800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+          className="w-full h-12 bg-[#F4B400] text-white rounded-lg mt-6 hover:bg-[#E5A800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-base shadow-sm"
         >
-          {loading ? 'Creating Account...' : 'Sign Up'}
+          {loading ? 'Creating Account...' : 'Create Account'}
         </button>
       </form>
 
       {/* Footer */}
-      <footer className="text-center mt-4">
-        <p className="text-sm text-[#0F2A44]">
+      <footer className="text-center mt-6 pt-6 border-t border-gray-200">
+        <p className="text-sm text-gray-600">
           Already have an account?{' '}
-          <Link to="/login" className="underline hover:opacity-80 font-semibold">
+          <Link to="/login" className="text-[#0F2A44] font-semibold hover:underline">
             Log in
           </Link>
         </p>

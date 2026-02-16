@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const authUser = await supabase.auth.getUser();
     return {
       ...data,
+      username: data.username || authUser.data.user?.email?.split('@')[0] || 'user',
       email: authUser.data.user?.email || '',
     };
   };
@@ -49,10 +50,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserProfileReal = async (): Promise<User | null> => {
     try {
       const userData = await authService.getCurrentUser();
+      console.log('Raw user data from API:', userData);
+      
+      // Handle both full_name and first_name/last_name from backend
+      let fullName = userData.full_name;
+      if (!fullName && (userData.first_name || userData.last_name)) {
+        fullName = `${userData.first_name || ''} ${userData.last_name || ''}`.trim();
+      }
+      if (!fullName) {
+        fullName = userData.username; // Fallback to username if no name is available
+      }
+      
       return {
         id: userData.id,
+        username: userData.username,
         email: userData.email,
-        full_name: userData.full_name,
+        full_name: fullName,
         phone_number: userData.phone_number || null,
         kyc_status: 'pending', // Default values - will be fetched from KYC endpoint later
         total_balance: 0,

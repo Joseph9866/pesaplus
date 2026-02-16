@@ -18,29 +18,32 @@ export const Splash = () => {
   };
 
   return (
-    <div className="relative w-full h-screen bg-[#0F2A44] flex flex-col items-center justify-center px-8">
-      {/* Logo/Title at top third */}
-      <div className="absolute top-1/3 transform -translate-y-1/2 text-center">
-        <h1 className="text-white text-5xl mb-0 font-bold">PesaPlus</h1>
+    <div className="relative w-full h-screen bg-gradient-to-br from-[#0F2A44] to-[#1a3a5c] flex flex-col items-center justify-center px-8">
+      {/* Logo/Title */}
+      <div className="text-center mb-16">
+        <h1 className="text-white text-6xl mb-4 font-bold tracking-tight">PesaPlus</h1>
+        <div className="w-24 h-1 bg-[#F4B400] mx-auto rounded-full"></div>
       </div>
 
-      {/* Tagline in center */}
-      <div className="text-center">
-        <h2 className="text-white text-3xl mb-4 font-semibold">Save, Grow, Earn</h2>
-        <p className="text-white text-base opacity-70">Start your savings journey today</p>
+      {/* Tagline */}
+      <div className="text-center mb-16">
+        <h2 className="text-white text-4xl mb-4 font-semibold">Save, Grow, Earn</h2>
+        <p className="text-white text-lg opacity-80 max-w-md mx-auto">
+          Start your savings journey today and watch your money grow
+        </p>
       </div>
 
-      {/* CTA buttons at bottom */}
-      <div className="absolute bottom-8 left-8 right-8 w-[calc(100%-4rem)]">
+      {/* CTA buttons */}
+      <div className="w-full max-w-sm space-y-4">
         <button
           onClick={handleGetStarted}
-          className="w-full h-14 bg-[#F4B400] text-white text-base font-semibold rounded-[28px] mb-4 hover:bg-[#E5A800] transition-colors"
+          className="w-full h-12 bg-[#F4B400] text-white text-base font-semibold rounded-lg hover:bg-[#E5A800] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
           Get Started
         </button>
-        <p className="text-white text-sm text-center mt-4">
+        <p className="text-white text-sm text-center">
           Already have an account?{' '}
-          <button onClick={handleLogin} className="underline hover:opacity-80">
+          <button onClick={handleLogin} className="font-semibold underline hover:text-[#F4B400] transition-colors">
             Log in
           </button>
         </p>

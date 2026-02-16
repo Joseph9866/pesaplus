@@ -45,3 +45,5 @@ coverage
 
 # OS files
 Thumbs.db
+
+.kiro/*

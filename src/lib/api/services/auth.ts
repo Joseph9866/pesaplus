@@ -45,6 +45,25 @@ export interface LoginResponse {
 
 export interface UserResponse {
   id: string;
+  username: string;
+  email: string;
+  full_name?: string;
+  first_name?: string;
+  last_name?: string;
+  phone_number?: string;
+  date_joined: string;
+}
+
+export interface UpdateUserRequest {
+  username?: string;
+  full_name?: string;
+  email?: string;
+  phone_number?: string;
+}
+
+export interface UpdateUserResponse {
+  id: string;
+  username: string;
   email: string;
   full_name: string;
   phone_number?: string;
@@ -109,6 +128,17 @@ export const authService = {
   getCurrentUser: async (): Promise<UserResponse> => {
     const response = await apiClient.get<UserResponse>(
       API_ENDPOINTS.auth.user
+    );
+    return response.data;
+  },
+
+  /**
+   * Update user profile
+   */
+  updateUser: async (data: UpdateUserRequest): Promise<UpdateUserResponse> => {
+    const response = await apiClient.patch<UpdateUserResponse>(
+      API_ENDPOINTS.auth.user,
+      data
     );
     return response.data;
   },

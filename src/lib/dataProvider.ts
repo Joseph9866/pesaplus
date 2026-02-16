@@ -1,11 +1,11 @@
 /**
- * Data provider factory - switches between mock and real Supabase client
+ * Data provider factory - switches between mock and Django backend
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { MockDataStore } from './mockDataStore';
 import { MockDataProviderImpl } from './mockDataProvider';
 import { generateSeedData, TEST_CREDENTIALS } from './mockSeedData';
+import { DjangoProvider } from './djangoProvider';
 
 // Read environment configuration
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true';
@@ -34,16 +34,10 @@ if (USE_MOCK_DATA) {
     console.log(`  - ${cred.scenario}: ${cred.email} / ${cred.password}`);
   });
 } else {
-  // Create real Supabase client
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Missing Supabase environment variables');
-  }
-
-  dataProvider = createClient(supabaseUrl, supabaseAnonKey);
-  console.log('🔌 Real Supabase Mode Active');
+  // Create Django backend provider
+  dataProvider = new DjangoProvider();
+  console.log('🔌 Django Backend Mode Active');
+  console.log('📡 API URL:', import.meta.env.VITE_API_BASE_URL);
 }
 
 // Export as both dataProvider and supabase for compatibility
