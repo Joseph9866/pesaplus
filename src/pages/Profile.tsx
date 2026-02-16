@@ -88,14 +88,13 @@ export const Profile = () => {
 
           {/* Sign Out Button */}
           <div className="flex justify-center pt-4">
-            <Button
-              variant="text"
+            <button
               onClick={handleSignOut}
-              className="text-red-600 hover:bg-red-50 px-8 py-3 rounded-lg font-medium transition-colors border border-red-200 hover:border-red-300"
+              className="flex items-center gap-2 px-8 py-3 bg-white border-2 border-red-500 text-red-600 rounded-lg font-semibold hover:bg-red-50 hover:border-red-600 transition-all shadow-sm hover:shadow-md"
             >
-              <LogOut size={20} className="mr-2" />
-              Sign Out
-            </Button>
+              <LogOut size={20} />
+              <span>Sign Out</span>
+            </button>
           </div>
         </div>
       </Container>
