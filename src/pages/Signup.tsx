@@ -44,7 +44,40 @@ export const Signup = () => {
       await signUp(data.email, data.password, data.fullName);
       navigate('/dashboard');
     } catch (err: unknown) {
-      if (err instanceof Error) {
+      console.error('Signup error:', err);
+      
+      // Extract error message from axios error
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as any;
+        if (axiosError.response?.data) {
+          // Try to get detailed error message
+          const errorData = axiosError.response.data;
+          console.log('Error response:', errorData);
+          
+          if (typeof errorData === 'string') {
+            setError(errorData);
+          } else if (errorData.message) {
+            setError(errorData.message);
+          } else if (errorData.detail) {
+            setError(errorData.detail);
+          } else if (errorData.error) {
+            setError(errorData.error);
+          } else {
+            // Show all field errors
+            const fieldErrors = Object.entries(errorData)
+              .map(([field, messages]) => {
+                if (Array.isArray(messages)) {
+                  return `${field}: ${messages.join(', ')}`;
+                }
+                return `${field}: ${messages}`;
+              })
+              .join('; ');
+            setError(fieldErrors || 'Failed to create account');
+          }
+        } else {
+          setError(`Error ${axiosError.response?.status}: ${axiosError.response?.statusText || 'Failed to create account'}`);
+        }
+      } else if (err instanceof Error) {
         setError(err.message || 'Failed to create account');
       } else {
         setError('Failed to create account');

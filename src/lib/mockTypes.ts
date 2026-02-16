@@ -52,6 +52,12 @@ export interface MockQueryBuilder<T = any> {
   // Terminal methods
   single(): Promise<MockResponse<T>>;
   maybeSingle(): Promise<MockResponse<T>>;
+  
+  // Promise-like interface for SELECT queries
+  then<TResult1 = MockResponse<T[]>, TResult2 = never>(
+    onfulfilled?: ((value: MockResponse<T[]>) => TResult1 | PromiseLike<TResult1>) | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
+  ): Promise<TResult1 | TResult2>;
 }
 
 // Authentication types matching Supabase auth

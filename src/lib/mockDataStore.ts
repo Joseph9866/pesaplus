@@ -128,13 +128,17 @@ export class MockDataStore {
   }
 
   private applySelect(records: any[], columns: string[]): any[] {
+    // If selecting all columns or no specific columns, return full records
+    if (columns.length === 0 || columns.includes('*')) {
+      return records;
+    }
+
+    // Otherwise, select only specified columns
     return records.map((record) => {
       const selected: any = { id: record.id };
       columns.forEach((col) => {
-        if (col !== '*' && col !== 'id') {
+        if (col !== 'id') {
           selected[col] = record[col];
-        } else if (col === '*') {
-          return record;
         }
       });
       return selected;

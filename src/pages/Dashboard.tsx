@@ -84,9 +84,16 @@ export const Dashboard = () => {
           user_id: user?.id,
           title: data.title,
           target_amount: parseFloat(data.target_amount),
+          current_amount: 0,
           deadline: data.deadline,
           icon: 'Target',
           color: '#1FA774',
+          status: 'active',
+          auto_save_enabled: false,
+          auto_save_amount: null,
+          auto_save_frequency: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         });
 
       if (error) throw error;

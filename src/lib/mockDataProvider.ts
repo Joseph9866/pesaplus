@@ -165,6 +165,36 @@ class MockQueryBuilderImpl<T = any> implements MockQueryBuilder<T> {
     }
   }
 
+  // Implement Promise-like interface for SELECT queries
+  async then<TResult1 = MockResponse<T[]>, TResult2 = never>(
+    onfulfilled?: ((value: MockResponse<T[]>) => TResult1 | PromiseLike<TResult1>) | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
+  ): Promise<TResult1 | TResult2> {
+    try {
+      await this.simulateDelay();
+      const results = await this.executeQuery();
+      const response: MockResponse<T[]> = { data: results as T[], error: null };
+      
+      if (onfulfilled) {
+        return onfulfilled(response);
+      }
+      return response as any;
+    } catch (error: any) {
+      const errorResponse: MockResponse<T[]> = {
+        data: null,
+        error: { message: error.message, code: 'QUERY_ERROR' },
+      };
+      
+      if (onrejected) {
+        return onrejected(error);
+      }
+      if (onfulfilled) {
+        return onfulfilled(errorResponse);
+      }
+      return errorResponse as any;
+    }
+  }
+
   private async executeQuery(): Promise<any[]> {
     if (this.isDelete) {
       const deleted = this.store.delete(this.table, this.filters);
