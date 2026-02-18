@@ -45,6 +45,37 @@ export interface Transaction {
   created_at: string;
 }
 
+export interface Loan {
+  id: string;
+  user_id: string;
+  amount: number;
+  interest_rate: number;
+  duration_months: number;
+  monthly_payment: number;
+  total_repayment: number;
+  amount_paid: number;
+  status: 'pending' | 'approved' | 'active' | 'completed' | 'rejected' | 'defaulted';
+  purpose: string;
+  application_date: string;
+  approval_date: string | null;
+  due_date: string | null;
+  created_at: string;
+}
+
+export interface Investment {
+  id: string;
+  user_id: string;
+  investment_type: 'fixed_deposit' | 'mutual_fund' | 'bonds' | 'stocks';
+  amount: number;
+  current_value: number;
+  interest_rate: number;
+  duration_months: number;
+  maturity_date: string;
+  status: 'active' | 'matured' | 'withdrawn';
+  returns: number;
+  created_at: string;
+}
+
 export interface Challenge {
   id: string;
   title: string;

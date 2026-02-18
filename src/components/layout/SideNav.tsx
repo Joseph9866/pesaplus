@@ -1,10 +1,13 @@
-import { Home, Target, Gift, Users, User, Settings as SettingsIcon, X } from 'lucide-react';
+import { Home, Target, Gift, Users, User, Settings as SettingsIcon, X, Receipt, Wallet, TrendingUp } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const navItems = [
   { icon: Home, label: 'Dashboard', path: '/dashboard' },
   { icon: Target, label: 'Goals', path: '/goals' },
+  { icon: Receipt, label: 'Transactions', path: '/transactions' },
+  { icon: Wallet, label: 'Loans', path: '/loans' },
+  { icon: TrendingUp, label: 'Investments', path: '/investments' },
   { icon: Gift, label: 'Rewards', path: '/rewards' },
   { icon: Users, label: 'Social', path: '/social' },
   { icon: User, label: 'Profile', path: '/profile' },

@@ -4,6 +4,7 @@ import { Layout } from '../components/layout/Layout';
 import { Container } from '../components/layout/Container';
 import { BalanceCard } from '../components/features/BalanceCard';
 import { GoalCard } from '../components/features/GoalCard';
+import { QuickActions } from '../components/features/QuickActions';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { Input } from '../components/ui/Input';
@@ -167,22 +168,22 @@ export const Dashboard = () => {
   if (goals.length === 0) {
     return (
       <Layout>
-        <div className="bg-neutral-100 min-h-[calc(100vh-8rem)] flex items-center justify-center px-6">
+        <div className="bg-neutral-100 min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 sm:px-6">
           <div className="text-center w-full max-w-md">
-            <div className="flex justify-center mb-4">
-              <svg className="w-[120px] h-[120px] text-[#8A8F98]" fill="currentColor" viewBox="0 0 24 24">
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <svg className="w-24 h-24 sm:w-28 sm:h-28 md:w-[120px] md:h-[120px] text-[#8A8F98]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M21.5 7h-3.75l-1.5-2.25c-.375-.563-.938-.75-1.5-.75h-5.5c-.563 0-1.125.188-1.5.75L6.25 7H2.5C1.672 7 1 7.672 1 8.5v11c0 .828.672 1.5 1.5 1.5h18c.828 0 1.5-.672 1.5-1.5v-11c0-.828-.672-1.5-1.5-1.5zM12 18c-2.762 0-5-2.238-5-5s2.238-5 5-5 5 2.238 5 5-2.238 5-5 5zm0-8c-1.656 0-3 1.344-3 3s1.344 3 3 3 3-1.344 3-3-1.344-3-3-3z"/>
               </svg>
             </div>
-            <h2 className="text-xl text-[#0F2A44] text-center mt-4 font-bold">
+            <h2 className="text-lg sm:text-xl md:text-2xl text-[#0F2A44] text-center mt-3 sm:mt-4 font-bold">
               Start Your Savings Journey
             </h2>
-            <p className="text-sm text-[#8A8F98] text-center mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#8A8F98] text-center mt-2 leading-relaxed px-4">
               Create your first goal to begin earning rewards
             </p>
             <button
               onClick={() => setShowGoalModal(true)}
-              className="w-full h-14 bg-[#F4B400] text-white rounded-lg mt-6 hover:bg-[#E5A800] transition-colors font-semibold"
+              className="w-full h-12 sm:h-14 bg-[#F4B400] text-white rounded-lg mt-4 sm:mt-6 hover:bg-[#E5A800] transition-colors font-semibold text-sm sm:text-base"
             >
               Create Goal
             </button>
@@ -225,16 +226,16 @@ export const Dashboard = () => {
 
   return (
     <Layout>
-      <div className="px-4 pb-6">
+      <div className="px-3 sm:px-4 md:px-6 pb-4 sm:pb-6">
         {/* Balance Card */}
-        <div className="bg-white rounded-2xl shadow-md p-6 mt-4 relative">
-          <div className="absolute top-4 left-4 text-2xl">💰</div>
-          <div className="mt-8">
-            <p className="text-neutral-500 text-xs uppercase tracking-wider mb-2">TOTAL BALANCE</p>
-            <h2 className="text-neutral-600 text-3xl mb-1">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md p-4 sm:p-5 md:p-6 mt-3 sm:mt-4 relative">
+          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 text-xl sm:text-2xl">💰</div>
+          <div className="mt-6 sm:mt-8">
+            <p className="text-neutral-500 text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2">TOTAL BALANCE</p>
+            <h2 className="text-neutral-600 text-2xl sm:text-3xl md:text-4xl mb-1">
               {formattedBalance}
             </h2>
-            <p className="text-neutral-500 text-xs flex items-center">
+            <p className="text-neutral-500 text-[10px] sm:text-xs flex items-center">
               <span className="mr-1">↗</span>
               <span>+{formattedWeeklyIncrease} this week</span>
             </p>
@@ -242,32 +243,32 @@ export const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex gap-4 mt-6">
+        <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
           <button
             onClick={() => {
               setDepositGoalId(null);
               setShowDepositModal(true);
             }}
-            className="flex-1 bg-neutral-500 text-white rounded-xl h-14 flex items-center justify-center hover:bg-neutral-600 transition-colors"
+            className="flex-1 bg-neutral-500 text-white rounded-lg sm:rounded-xl h-12 sm:h-14 flex items-center justify-center hover:bg-neutral-600 transition-colors text-sm sm:text-base"
           >
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" fill="currentColor" viewBox="0 0 24 24">
               <path d="M21.5 7h-3.75l-1.5-2.25c-.375-.563-.938-.75-1.5-.75h-5.5c-.563 0-1.125.188-1.5.75L6.25 7H2.5C1.672 7 1 7.672 1 8.5v11c0 .828.672 1.5 1.5 1.5h18c.828 0 1.5-.672 1.5-1.5v-11c0-.828-.672-1.5-1.5-1.5z"/>
             </svg>
             Quick Save
           </button>
           <button
             onClick={() => setShowGoalModal(true)}
-            className="flex-1 bg-white text-neutral-900 border-2 border-neutral-900 rounded-xl h-14 flex items-center justify-center hover:bg-neutral-50 transition-colors"
+            className="flex-1 bg-white text-neutral-900 border-2 border-neutral-900 rounded-lg sm:rounded-xl h-12 sm:h-14 flex items-center justify-center hover:bg-neutral-50 transition-colors text-sm sm:text-base"
           >
-            <Plus size={20} className="mr-2" />
+            <Plus size={18} className="sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
             Add Goal
           </button>
         </div>
 
         {/* Active Goals */}
-        <section className="mt-8">
-          <h3 className="text-xl text-neutral-900 mb-4 font-semibold">Active Goals</h3>
-          <div className="space-y-4">
+        <section className="mt-6 sm:mt-8">
+          <h3 className="text-lg sm:text-xl md:text-2xl text-neutral-900 mb-3 sm:mb-4 font-semibold">Active Goals</h3>
+          <div className="space-y-3 sm:space-y-4">
             {goals.map((goal) => {
               const progress = (goal.current_amount / goal.target_amount) * 100;
               const convertedCurrent = convertCurrency(goal.current_amount, 'KES', currency, exchangeRate);
@@ -279,22 +280,22 @@ export const Dashboard = () => {
                 <div
                   key={goal.id}
                   onClick={() => navigate(`/goals/${goal.id}`)}
-                  className="bg-white rounded-xl p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                  className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                 >
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
                     <div className="flex items-center">
-                      <span className="text-2xl mr-2">{goal.icon}</span>
-                      <h4 className="text-base text-neutral-900 font-medium">{goal.title}</h4>
+                      <span className="text-xl sm:text-2xl mr-1.5 sm:mr-2">{goal.icon}</span>
+                      <h4 className="text-sm sm:text-base text-neutral-900 font-medium">{goal.title}</h4>
                     </div>
-                    <span className="text-neutral-600 text-sm font-semibold">{Math.round(progress)}%</span>
+                    <span className="text-neutral-600 text-xs sm:text-sm font-semibold">{Math.round(progress)}%</span>
                   </div>
-                  <div className="w-full bg-neutral-200 rounded-full h-2 mb-2">
+                  <div className="w-full bg-neutral-200 rounded-full h-1.5 sm:h-2 mb-1.5 sm:mb-2">
                     <div
-                      className="bg-neutral-600 h-2 rounded-full transition-all"
+                      className="bg-neutral-600 h-1.5 sm:h-2 rounded-full transition-all"
                       style={{ width: `${Math.min(progress, 100)}%` }}
                     />
                   </div>
-                  <p className="text-neutral-600 text-sm">
+                  <p className="text-neutral-600 text-xs sm:text-sm">
                     {formattedCurrent} / {formattedTarget}
                   </p>
                 </div>
@@ -303,22 +304,27 @@ export const Dashboard = () => {
           </div>
         </section>
 
+        {/* Quick Actions */}
+        <section className="mt-6 sm:mt-8 mb-4 sm:mb-6">
+          <QuickActions />
+        </section>
+
         {/* Streaks & Achievements */}
-        <section className="mt-8 mb-6">
-          <h3 className="text-xl text-neutral-900 mb-4 font-semibold">Streaks & Achievements</h3>
-          <div className="flex gap-3 overflow-x-auto pb-2">
-            <div className="bg-neutral-100 rounded-xl px-4 py-3 flex items-center whitespace-nowrap">
-              <span className="text-2xl mr-2">🔥</span>
-              <span className="text-sm text-neutral-900">7 Day Streak</span>
+        <section className="mt-6 sm:mt-8 mb-4 sm:mb-6">
+          <h3 className="text-lg sm:text-xl md:text-2xl text-neutral-900 mb-3 sm:mb-4 font-semibold">Streaks & Achievements</h3>
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="bg-neutral-100 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center whitespace-nowrap flex-shrink-0">
+              <span className="text-xl sm:text-2xl mr-1.5 sm:mr-2">🔥</span>
+              <span className="text-xs sm:text-sm text-neutral-900">7 Day Streak</span>
             </div>
-            <div className="bg-neutral-100 rounded-xl px-4 py-3 flex items-center">
-              <span className="text-2xl">🏆</span>
+            <div className="bg-neutral-100 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center flex-shrink-0">
+              <span className="text-xl sm:text-2xl">🏆</span>
             </div>
-            <div className="bg-neutral-100 rounded-xl px-4 py-3 flex items-center">
-              <span className="text-2xl">🎯</span>
+            <div className="bg-neutral-100 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center flex-shrink-0">
+              <span className="text-xl sm:text-2xl">🎯</span>
             </div>
-            <div className="bg-neutral-100 rounded-xl px-4 py-3 flex items-center">
-              <span className="text-2xl">⭐</span>
+            <div className="bg-neutral-100 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center flex-shrink-0">
+              <span className="text-xl sm:text-2xl">⭐</span>
             </div>
           </div>
         </section>

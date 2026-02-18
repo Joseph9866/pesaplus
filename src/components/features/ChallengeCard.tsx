@@ -1,9 +1,7 @@
-import { Card } from '../ui/Card';
 import { LinearProgress } from '../ui/ProgressBar';
 import { Badge } from '../ui/Badge';
 import { ChallengeWithProgress } from '../../types';
 import { Users, Trophy, Calendar } from 'lucide-react';
-import { Button } from '../ui/Button';
 import { useFormattedCurrency } from '../../utils/currency';
 
 interface ChallengeCardProps {
@@ -29,42 +27,42 @@ export const ChallengeCard = ({ challenge, onJoin, onView }: ChallengeCardProps)
   };
 
   return (
-    <Card>
-      <div className="space-y-4">
+    <div className="bg-white rounded-md border border-[#E2E8F0] shadow-sm p-4 sm:p-6">
+      <div className="space-y-3 sm:space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="font-semibold text-text">{challenge.title}</h3>
+              <h3 className="text-sm sm:text-base font-semibold text-gray-900 font-inter">{challenge.title}</h3>
               {isParticipating && (
                 <Badge variant="secondary" className="text-xs">
                   Joined
                 </Badge>
               )}
             </div>
-            <p className="text-sm text-text-secondary">{challenge.description}</p>
+            <p className="text-xs sm:text-sm text-[#64748B] font-inter">{challenge.description}</p>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-4 text-sm">
-          <div className="flex items-center gap-2 text-text-secondary">
-            <Trophy size={16} className="text-accent" />
-            <span>{challenge.reward_entries} entries</span>
+        <div className="flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Trophy size={14} className="sm:w-4 sm:h-4 text-[#F4B400]" />
+            <span className="text-[#64748B] font-inter">{challenge.reward_entries} entries</span>
           </div>
-          <div className="flex items-center gap-2 text-text-secondary">
-            <Users size={16} className="text-secondary" />
-            <span>{challenge.participants_count} participants</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Users size={14} className="sm:w-4 sm:h-4 text-[#1FA774]" />
+            <span className="text-[#64748B] font-inter">{challenge.participants_count} participants</span>
           </div>
-          <div className="flex items-center gap-2 text-text-secondary">
-            <Calendar size={16} className="text-primary" />
-            <span>{getDaysRemaining()} days left</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Calendar size={14} className="sm:w-4 sm:h-4 text-blue-600" />
+            <span className="text-[#64748B] font-inter">{getDaysRemaining()} days left</span>
           </div>
         </div>
 
         {isParticipating && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-text-secondary">Your Progress</span>
-              <span className="text-sm font-medium text-text">
+              <span className="text-xs sm:text-sm text-[#64748B] font-inter">Your Progress</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-900 font-inter">
                 {formattedCurrentAmount} / {formattedTargetAmount}
               </span>
             </div>
@@ -72,19 +70,29 @@ export const ChallengeCard = ({ challenge, onJoin, onView }: ChallengeCardProps)
           </div>
         )}
 
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           {!isParticipating && onJoin && (
-            <Button onClick={onJoin} fullWidth>
+            <button
+              onClick={onJoin}
+              className="flex-1 h-10 px-4 sm:px-6 rounded-md font-medium transition-all duration-150 bg-[#1FA774] text-white hover:bg-[#1a8c62] hover:shadow-md font-inter text-sm sm:text-base"
+            >
               Join Challenge
-            </Button>
+            </button>
           )}
           {onView && (
-            <Button onClick={onView} variant={isParticipating ? 'primary' : 'secondary'} fullWidth>
+            <button
+              onClick={onView}
+              className={`flex-1 h-10 px-4 sm:px-6 rounded-md font-medium transition-all duration-150 font-inter text-sm sm:text-base ${
+                isParticipating
+                  ? 'bg-[#1FA774] text-white hover:bg-[#1a8c62] hover:shadow-md'
+                  : 'border border-[#E2E8F0] text-gray-700 hover:border-gray-400 hover:shadow-md'
+              }`}
+            >
               View Details
-            </Button>
+            </button>
           )}
         </div>
       </div>
-    </Card>
+    </div>
   );
 };

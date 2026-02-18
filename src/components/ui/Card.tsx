@@ -16,7 +16,7 @@ export const Card = ({ children, className = '', onClick, hover = false }: CardP
       onClick={onClick}
       whileHover={hover ? { scale: 1.02 } : undefined}
       whileTap={onClick ? { scale: 0.98 } : undefined}
-      className={`bg-white rounded-2xl p-4 shadow-sm ${
+      className={`bg-white rounded-2xl p-6 shadow-sm ${
         onClick ? 'cursor-pointer' : ''
       } ${className}`}
     >

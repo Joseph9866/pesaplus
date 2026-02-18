@@ -14,7 +14,7 @@ export const BottomNav = () => {
   const location = useLocation();
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white h-16 flex items-center justify-around shadow-lg z-50 max-w-[428px] mx-auto border-t border-neutral-200">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white h-14 sm:h-16 flex items-center justify-around shadow-lg z-50 border-t border-neutral-200">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = location.pathname === item.path ||
@@ -24,12 +24,12 @@ export const BottomNav = () => {
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className={`flex flex-col items-center justify-center w-16 transition-colors ${
+            className={`flex flex-col items-center justify-center w-14 sm:w-16 transition-colors ${
               isActive ? 'text-[#0F2A44]' : 'text-[#8A8F98]'
             }`}
           >
-            <Icon size={20} strokeWidth={isActive ? 2.5 : 2} className="mb-1" />
-            <span className="text-xs">{item.label}</span>
+            <Icon size={18} strokeWidth={isActive ? 2.5 : 2} className="sm:w-5 sm:h-5 mb-0.5 sm:mb-1" />
+            <span className="text-[10px] sm:text-xs">{item.label}</span>
           </button>
         );
       })}

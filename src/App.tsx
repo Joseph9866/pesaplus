@@ -18,6 +18,9 @@ import { Social } from './pages/Social';
 import { Notifications } from './pages/Notifications';
 import { Profile } from './pages/Profile';
 import { Settings } from './pages/Settings';
+import { Transactions } from './pages/Transactions';
+import { Loans } from './pages/Loans';
+import { Investments } from './pages/Investments';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -212,6 +215,33 @@ function App() {
             element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/transactions"
+            element={
+              <ProtectedRoute>
+                <Transactions />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/loans"
+            element={
+              <ProtectedRoute>
+                <Loans />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/investments"
+            element={
+              <ProtectedRoute>
+                <Investments />
               </ProtectedRoute>
             }
           />

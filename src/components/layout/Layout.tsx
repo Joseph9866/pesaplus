@@ -25,7 +25,7 @@ export const Layout = ({ children, title, showBack, backPath, showNotifications 
           showNotifications={showNotifications}
           onMenuClick={() => setIsSideNavOpen(true)}
         />
-        <main className="pt-16 pb-16 min-h-screen">
+        <main className="pt-14 sm:pt-16 pb-14 sm:pb-16 min-h-screen">
           {children}
         </main>
       </div>
