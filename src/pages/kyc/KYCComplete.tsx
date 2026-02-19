@@ -1,11 +1,16 @@
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Layout } from '../../components/layout/Layout';
 import { Container } from '../../components/layout/Container';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
-import { CheckCircle, TrendingUp, Trophy, Gift } from 'lucide-react';
+import { CheckCircle, TrendingUp, Trophy, Gift, User, MapPin, CreditCard, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../contexts/AuthContext';
+import { kycService } from '../../lib/api/services/kyc';
+import { KYCData } from '../../types';
+import { useErrorHandler } from '../../hooks/useErrorHandler';
 
 const benefits = [
   {
@@ -27,6 +32,79 @@ const benefits = [
 
 export const KYCComplete = () => {
   const navigate = useNavigate();
+  const { kycData: contextKycData } = useAuth();
+  const { error, handleError, clearError } = useErrorHandler();
+  const [kycData, setKycData] = useState<KYCData | null>(contextKycData);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchKYCData = async () => {
+      try {
+        setLoading(true);
+        clearError();
+
+        // If we have KYC data in context with membership number, fetch the latest
+        if (contextKycData?.membership_number) {
+          const data = await kycService.getKYC(contextKycData.membership_number);
+          setKycData(data);
+        } else {
+          // Try to fetch from list endpoint
+          const kycRecords = await kycService.listKYC();
+          if (kycRecords && kycRecords.length > 0) {
+            setKycData(kycRecords[0]);
+          } else {
+            handleError({ message: 'No KYC data found', status: 404, code: 'NOT_FOUND' });
+          }
+        }
+      } catch (err: any) {
+        console.error('Error fetching KYC data:', err);
+        handleError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchKYCData();
+  }, [contextKycData, clearError, handleError]);
+
+  if (loading) {
+    return (
+      <Layout showBack={false} showNotifications={false} title="Verification Complete">
+        <Container>
+          <div className="max-w-2xl mx-auto py-8 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto mb-4"></div>
+              <p className="text-text-secondary">Loading verification details...</p>
+            </div>
+          </div>
+        </Container>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout showBack={false} showNotifications={false} title="Verification Complete">
+        <Container>
+          <div className="max-w-2xl mx-auto py-8">
+            <Card className="text-center">
+              <AlertCircle size={48} className="text-error mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-text mb-3">Unable to Load Details</h2>
+              <p className="text-text-secondary mb-6">{error?.message || 'An error occurred'}</p>
+              <div className="flex gap-3 justify-center">
+                <Button variant="secondary" onClick={() => window.location.reload()}>
+                  Try Again
+                </Button>
+                <Button onClick={() => navigate('/dashboard')}>
+                  Go to Dashboard
+                </Button>
+              </div>
+            </Card>
+          </div>
+        </Container>
+      </Layout>
+    );
+  }
 
   return (
     <Layout showBack={false} showNotifications={false} title="Verification Complete">
@@ -57,6 +135,63 @@ export const KYCComplete = () => {
               </p>
             </Card>
           </motion.div>
+
+          {kycData && (
+            <Card>
+              <h3 className="font-semibold text-text mb-4">Verified Information</h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <User size={20} className="text-secondary mt-1" />
+                  <div className="flex-1">
+                    <p className="text-sm text-text-secondary">Personal Details</p>
+                    <p className="text-text font-medium">
+                      {kycData.gender && `${kycData.gender.charAt(0).toUpperCase() + kycData.gender.slice(1)}`}
+                      {kycData.marital_status && ` • ${kycData.marital_status.charAt(0).toUpperCase() + kycData.marital_status.slice(1)}`}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <CreditCard size={20} className="text-secondary mt-1" />
+                  <div className="flex-1">
+                    <p className="text-sm text-text-secondary">ID Number</p>
+                    <p className="text-text font-medium">{kycData.id_number}</p>
+                  </div>
+                </div>
+
+                {kycData.kra_pin && (
+                  <div className="flex items-start gap-3">
+                    <CreditCard size={20} className="text-secondary mt-1" />
+                    <div className="flex-1">
+                      <p className="text-sm text-text-secondary">KRA PIN</p>
+                      <p className="text-text font-medium">{kycData.kra_pin}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-start gap-3">
+                  <MapPin size={20} className="text-secondary mt-1" />
+                  <div className="flex-1">
+                    <p className="text-sm text-text-secondary">Location</p>
+                    <p className="text-text font-medium">
+                      {kycData.county && `${kycData.county}`}
+                      {kycData.country && `, ${kycData.country}`}
+                    </p>
+                  </div>
+                </div>
+
+                {kycData.membership_number && (
+                  <div className="flex items-start gap-3">
+                    <CheckCircle size={20} className="text-secondary mt-1" />
+                    <div className="flex-1">
+                      <p className="text-sm text-text-secondary">Membership Number</p>
+                      <p className="text-text font-medium">{kycData.membership_number}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
 
           <Card>
             <h3 className="font-semibold text-text mb-4 text-center">

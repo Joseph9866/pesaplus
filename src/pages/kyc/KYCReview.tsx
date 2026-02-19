@@ -1,62 +1,171 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Edit } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { ArrowLeft, CheckCircle, Edit, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { draftManager, KYCDraft } from '../../lib/kyc/draftManager';
+import { kycService } from '../../lib/api/services/kyc';
+import { KYCData, APIError } from '../../types';
 
 export const KYCReview = () => {
   const navigate = useNavigate();
-  const { user, refreshUser } = useAuth();
+  const { updateKYCStatus, refreshKYCStatus, kycStatus, kycData } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [personalInfo, setPersonalInfo] = useState<any>(null);
-  const [document, setDocument] = useState<any>(null);
-  const [selfie, setSelfie] = useState<any>(null);
+  const [draft, setDraft] = useState<KYCDraft | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
-    // Load all stored data
-    const personalInfoString = sessionStorage.getItem('kyc_personal_info');
-    const documentString = sessionStorage.getItem('kyc_document');
-    const selfieString = sessionStorage.getItem('kyc_selfie');
-
-    if (personalInfoString) setPersonalInfo(JSON.parse(personalInfoString));
-    if (documentString) setDocument(JSON.parse(documentString));
-    if (selfieString) setSelfie(JSON.parse(selfieString));
-  }, []);
+    // Load draft data
+    const loadedDraft = draftManager.loadDraft();
+    if (!loadedDraft) {
+      // No draft data, redirect to start
+      navigate('/kyc/intro');
+      return;
+    }
+    setDraft(loadedDraft);
+    
+    // Check if we're in edit mode (rejected status with existing KYC data)
+    if (kycStatus === 'rejected' && kycData) {
+      setIsEditMode(true);
+    }
+  }, [navigate, kycStatus, kycData]);
 
   const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      // Submit all KYC data to backend
-      await supabase
-        .from('user_profiles')
-        .update({
-          full_name: `${personalInfo.firstName} ${personalInfo.lastName}`,
-          kyc_id_number: personalInfo.idNumber,
-          kyc_address: `${personalInfo.address}, ${personalInfo.city}, ${personalInfo.postalCode}`,
-          kyc_date_of_birth: personalInfo.dateOfBirth,
-          kyc_status: 'submitted',
-          kyc_document_url: `documents/${user?.id}/${document?.fileName}`,
-          kyc_selfie_url: `selfies/${user?.id}/${selfie?.fileName}`,
-        })
-        .eq('id', user?.id);
+    if (!draft?.personalInfo) {
+      setError('Missing personal information. Please complete all steps.');
+      return;
+    }
 
-      await refreshUser();
+    setLoading(true);
+    setError(null);
+    setFieldErrors({});
+
+    try {
+      if (isEditMode && kycData?.membership_number) {
+        // Edit mode: Perform partial update (PATCH) with only changed fields
+        const changedFields: Partial<KYCData> = {};
+        
+        // Compare draft data with existing KYC data to identify changed fields
+        if (draft.personalInfo.gender !== kycData.gender) {
+          changedFields.gender = draft.personalInfo.gender as 'male' | 'female' | 'other';
+        }
+        if (draft.personalInfo.marital_status !== kycData.marital_status) {
+          changedFields.marital_status = draft.personalInfo.marital_status as 'married' | 'single' | 'other';
+        }
+        if (draft.personalInfo.id_number !== kycData.id_number) {
+          changedFields.id_number = draft.personalInfo.id_number;
+        }
+        if (draft.personalInfo.kra_pin !== kycData.kra_pin) {
+          changedFields.kra_pin = draft.personalInfo.kra_pin;
+        }
+        if (draft.personalInfo.country !== kycData.country) {
+          changedFields.country = draft.personalInfo.country;
+        }
+        if (draft.personalInfo.county !== kycData.county) {
+          changedFields.county = draft.personalInfo.county;
+        }
+
+        // Only send update if there are changed fields
+        if (Object.keys(changedFields).length === 0) {
+          setError('No changes detected. Please modify at least one field.');
+          setLoading(false);
+          return;
+        }
+
+        console.log('Updating KYC data with changed fields:', changedFields);
+
+        // Perform partial update
+        const response = await kycService.patchKYC(kycData.membership_number, changedFields);
+        
+        console.log('KYC update successful:', response);
+
+        // Clear draft data after successful update
+        draftManager.clearDraft();
+
+        // Refresh KYC status from backend
+        await refreshKYCStatus();
+
+        // Navigate to pending page
+        navigate('/kyc/pending');
+      } else {
+        // Create mode: Submit new KYC data
+        const kycDataToSubmit: KYCData = {
+          id_number: draft.personalInfo.id_number,
+          kra_pin: draft.personalInfo.kra_pin,
+          gender: draft.personalInfo.gender as 'male' | 'female' | 'other',
+          marital_status: draft.personalInfo.marital_status as 'married' | 'single' | 'other',
+          country: draft.personalInfo.country,
+          county: draft.personalInfo.county,
+          kyc_submitted: true,
+          kyc_confirmed: false,
+        };
+
+        // Note: Document uploads should be handled separately before submission
+        // For now, we're submitting the KYC data without documents
+        // In a complete implementation, documents would be uploaded first and URLs added here
+
+        console.log('Submitting KYC data:', kycDataToSubmit);
+
+        // Submit KYC data to backend
+        const response = await kycService.createKYC(kycDataToSubmit);
+        
+        console.log('KYC submission successful:', response);
+
+        // Clear draft data after successful submission
+        draftManager.clearDraft();
+
+        // Update auth context with new status
+        updateKYCStatus('submitted');
+        
+        // Refresh KYC status from backend
+        await refreshKYCStatus();
+
+        // Navigate to pending page
+        navigate('/kyc/pending');
+      }
+    } catch (err: any) {
+      console.error('Error submitting/updating KYC:', err);
       
-      // Clear session storage
-      sessionStorage.removeItem('kyc_personal_info');
-      sessionStorage.removeItem('kyc_document');
-      sessionStorage.removeItem('kyc_selfie');
+      // Handle API errors
+      const apiError = err as APIError;
       
-      navigate('/kyc/pending');
-    } catch (error) {
-      console.error('Error submitting KYC:', error);
+      // Special handling for 403 permission errors
+      if (apiError.status === 403 || apiError.code === 'AUTHORIZATION_ERROR') {
+        setError('Permission denied: Your account does not have permission to submit KYC. Please contact support or check your account status.');
+        console.error('403 Permission Error Details:', {
+          status: apiError.status,
+          code: apiError.code,
+          message: apiError.message,
+          response: err.response?.data
+        });
+      } else if (apiError.fieldErrors) {
+        // Display field-specific validation errors
+        setFieldErrors(apiError.fieldErrors);
+        setError('Please correct the errors below and try again.');
+      } else {
+        // Display general error message
+        setError(apiError.message || `Failed to ${isEditMode ? 'update' : 'submit'} KYC. Please try again.`);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  if (!personalInfo) {
-    return null;
+  if (!draft?.personalInfo) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-[#6B7280] mb-4">No KYC data found</p>
+          <button
+            onClick={() => navigate('/kyc/intro')}
+            className="text-[#0F2A44] underline"
+          >
+            Start KYC Process
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -86,7 +195,30 @@ export const KYCReview = () => {
       <div className="flex-1 pt-28 pb-24 px-4 sm:px-6 md:px-8 overflow-y-auto">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-xl sm:text-2xl font-semibold text-[#0F2A44] mb-2">Review Your Information</h2>
-          <p className="text-sm sm:text-base text-[#6B7280] mb-6">Please review all details before submitting</p>
+          <p className="text-sm sm:text-base text-[#6B7280] mb-6">
+            {isEditMode 
+              ? 'Review your updated information before resubmitting' 
+              : 'Please review all details before submitting'}
+          </p>
+
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex items-start gap-3">
+              <AlertCircle size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm text-red-800">{error}</p>
+                {Object.keys(fieldErrors).length > 0 && (
+                  <ul className="mt-2 space-y-1">
+                    {Object.entries(fieldErrors).map(([field, errors]) => (
+                      <li key={field} className="text-xs text-red-700">
+                        <strong>{field}:</strong> {errors.join(', ')}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Personal Information */}
           <div className="bg-white border border-neutral-200 rounded-xl p-4 mb-4">
@@ -102,20 +234,28 @@ export const KYCReview = () => {
             </div>
             <div className="space-y-2">
               <div>
-                <p className="text-xs text-[#6B7280]">Full Name</p>
-                <p className="text-sm text-[#0F2A44]">{personalInfo.firstName} {personalInfo.lastName}</p>
+                <p className="text-xs text-[#6B7280]">Gender</p>
+                <p className="text-sm text-[#0F2A44] capitalize">{draft.personalInfo.gender}</p>
               </div>
               <div>
-                <p className="text-xs text-[#6B7280]">Date of Birth</p>
-                <p className="text-sm text-[#0F2A44]">{personalInfo.dateOfBirth}</p>
+                <p className="text-xs text-[#6B7280]">Marital Status</p>
+                <p className="text-sm text-[#0F2A44] capitalize">{draft.personalInfo.marital_status}</p>
               </div>
               <div>
                 <p className="text-xs text-[#6B7280]">National ID Number</p>
-                <p className="text-sm text-[#0F2A44]">{personalInfo.idNumber}</p>
+                <p className="text-sm text-[#0F2A44]">{draft.personalInfo.id_number}</p>
               </div>
               <div>
-                <p className="text-xs text-[#6B7280]">Address</p>
-                <p className="text-sm text-[#0F2A44]">{personalInfo.address}, {personalInfo.city}, {personalInfo.postalCode}</p>
+                <p className="text-xs text-[#6B7280]">KRA PIN</p>
+                <p className="text-sm text-[#0F2A44]">{draft.personalInfo.kra_pin}</p>
+              </div>
+              <div>
+                <p className="text-xs text-[#6B7280]">Country</p>
+                <p className="text-sm text-[#0F2A44]">{draft.personalInfo.country}</p>
+              </div>
+              <div>
+                <p className="text-xs text-[#6B7280]">County</p>
+                <p className="text-sm text-[#0F2A44]">{draft.personalInfo.county}</p>
               </div>
             </div>
           </div>
@@ -132,15 +272,34 @@ export const KYCReview = () => {
                 Edit
               </button>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#1FA774]/10 rounded-full flex items-center justify-center">
-                <CheckCircle size={20} className="text-[#1FA774]" />
+            {draft.documents?.id_front_preview || draft.documents?.id_back_preview ? (
+              <div className="space-y-3">
+                {draft.documents.id_front_preview && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#1FA774]/10 rounded-full flex items-center justify-center">
+                      <CheckCircle size={20} className="text-[#1FA774]" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-[#0F2A44]">Front of ID uploaded</p>
+                      <p className="text-xs text-[#6B7280]">Document ready for submission</p>
+                    </div>
+                  </div>
+                )}
+                {draft.documents.id_back_preview && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#1FA774]/10 rounded-full flex items-center justify-center">
+                      <CheckCircle size={20} className="text-[#1FA774]" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-[#0F2A44]">Back of ID uploaded</p>
+                      <p className="text-xs text-[#6B7280]">Document ready for submission</p>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div>
-                <p className="text-sm text-[#0F2A44]">Document uploaded</p>
-                <p className="text-xs text-[#6B7280]">{document?.fileName}</p>
-              </div>
-            </div>
+            ) : (
+              <div className="text-sm text-[#6B7280]">No documents uploaded yet</div>
+            )}
           </div>
 
           {/* Selfie Upload */}
@@ -155,15 +314,19 @@ export const KYCReview = () => {
                 Edit
               </button>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#1FA774]/10 rounded-full flex items-center justify-center">
-                <CheckCircle size={20} className="text-[#1FA774]" />
+            {draft.documents?.selfie_preview ? (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#1FA774]/10 rounded-full flex items-center justify-center">
+                  <CheckCircle size={20} className="text-[#1FA774]" />
+                </div>
+                <div>
+                  <p className="text-sm text-[#0F2A44]">Selfie uploaded</p>
+                  <p className="text-xs text-[#6B7280]">Photo ready for submission</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-[#0F2A44]">Selfie uploaded</p>
-                <p className="text-xs text-[#6B7280]">{selfie?.fileName}</p>
-              </div>
-            </div>
+            ) : (
+              <div className="text-sm text-[#6B7280]">No selfie uploaded yet</div>
+            )}
           </div>
 
           <div className="bg-[#F4F6F8] rounded-lg p-3 sm:p-4 mt-6">
@@ -182,7 +345,7 @@ export const KYCReview = () => {
             disabled={loading}
             className="w-full bg-[#F4B400] hover:bg-[#E5A800] text-white py-3 sm:py-4 rounded-lg text-base sm:text-lg font-medium transition-colors disabled:opacity-50"
           >
-            {loading ? 'Submitting...' : 'Submit for Review'}
+            {loading ? (isEditMode ? 'Updating...' : 'Submitting...') : (isEditMode ? 'Update & Resubmit' : 'Submit for Review')}
           </button>
         </div>
       </div>

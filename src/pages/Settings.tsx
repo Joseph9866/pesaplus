@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCurrency } from '../contexts/CurrencyContext';
-import { SideNav } from '../components/layout/SideNav';
-import { Header } from '../components/layout/Header';
+import { Layout } from '../components/layout/Layout';
+import { Container } from '../components/layout/Container';
 import { CurrencyModal } from '../components/CurrencyModal';
 import {
   User,
@@ -27,7 +27,6 @@ export const Settings = () => {
   const { currency } = useCurrency();
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [biometricEnabled, setBiometricEnabled] = useState(true);
-  const [isSideNavOpen, setIsSideNavOpen] = useState(false);
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
 
   const handleSignOut = async () => {
@@ -40,32 +39,26 @@ export const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-100">
-      <SideNav isOpen={isSideNavOpen} onClose={() => setIsSideNavOpen(false)} />
-      <Header 
-        title="Settings" 
-        showBack={true} 
-        showNotifications={true}
-        onMenuClick={() => setIsSideNavOpen(true)}
-      />
-      <main className="pt-16 pb-6 px-4">
+    <Layout title="Settings">
+      <Container>
+        <div className="max-w-2xl mx-auto py-3 sm:py-4 px-3 sm:px-4">
         {/* Profile Section */}
-        <div className="mt-6">
-          <div className="bg-white rounded-xl p-4 shadow-sm text-center">
+        <div className="mt-4 sm:mt-6">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm text-center">
             <img
-              src={`https://api.dicebear.com/7.x/notionists/svg?scale=200&seed=${user?.id || '42857'}`}
+              src={`https://api.dicebear.com/7.x/notionists/svg?scale=200&seed=${user?.full_name || user?.email || user?.id || '42857'}`}
               alt="Profile Avatar"
-              className="w-20 h-20 rounded-full mx-auto border-2 border-neutral-200"
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full mx-auto border-2 border-neutral-200"
             />
-            <h2 className="text-lg text-neutral-900 mt-3 font-semibold">
+            <h2 className="text-base sm:text-lg md:text-xl text-neutral-900 mt-2 sm:mt-3 font-semibold">
               {user?.full_name || 'John Doe'}
             </h2>
-            <p className="text-sm text-neutral-500 mt-1">
+            <p className="text-xs sm:text-sm text-neutral-500 mt-1">
               {user?.email || 'john.doe@email.com'}
             </p>
             <button
               onClick={() => navigate('/profile')}
-              className="text-sm text-neutral-900 mt-3 hover:underline"
+              className="text-xs sm:text-sm text-neutral-900 mt-2 sm:mt-3 hover:underline"
             >
               Edit Profile
             </button>
@@ -73,15 +66,15 @@ export const Settings = () => {
         </div>
 
         {/* Account Section */}
-        <div className="mt-6">
+        <div className="mt-4 sm:mt-6">
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <button
               onClick={() => navigate('/profile')}
-              className="w-full flex items-center justify-between px-4 py-3 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
-                <User className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Personal Information</span>
+                <User className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Personal Information</span>
               </div>
               <ChevronRight className="text-neutral-400" size={16} />
             </button>
@@ -90,11 +83,11 @@ export const Settings = () => {
                 // TODO: Navigate to payment methods page
                 console.log('Navigate to Payment Methods');
               }}
-              className="w-full flex items-center justify-between px-4 py-3 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
-                <CreditCard className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Payment Methods</span>
+                <CreditCard className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Payment Methods</span>
               </div>
               <ChevronRight className="text-neutral-400" size={16} />
             </button>
@@ -103,11 +96,11 @@ export const Settings = () => {
                 // TODO: Navigate to withdrawal options page
                 console.log('Navigate to Withdrawal Options');
               }}
-              className="w-full flex items-center justify-between px-4 py-3 hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
-                <Banknote className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Withdrawal Options</span>
+                <Banknote className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Withdrawal Options</span>
               </div>
               <ChevronRight className="text-neutral-400" size={16} />
             </button>
@@ -115,15 +108,15 @@ export const Settings = () => {
         </div>
 
         {/* Preferences Section */}
-        <div className="mt-4">
+        <div className="mt-3 sm:mt-4">
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <button
               onClick={() => navigate('/notifications')}
-              className="w-full flex items-center justify-between px-4 py-3 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
-                <Bell className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Notifications</span>
+                <Bell className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Notifications</span>
               </div>
               <ChevronRight className="text-neutral-400" size={16} />
             </button>
@@ -132,27 +125,27 @@ export const Settings = () => {
                 // TODO: Navigate to language settings page
                 console.log('Navigate to Language Settings');
               }}
-              className="w-full flex items-center justify-between px-4 py-3 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
-                <Globe className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Language</span>
+                <Globe className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Language</span>
               </div>
               <div className="flex items-center">
-                <span className="text-sm text-neutral-500 mr-2">English</span>
+                <span className="text-xs sm:text-sm text-neutral-500 mr-2">English</span>
                 <ChevronRight className="text-neutral-400" size={16} />
               </div>
             </button>
             <button
               onClick={() => setShowCurrencyModal(true)}
-              className="w-full flex items-center justify-between px-4 py-3 hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
-                <DollarSign className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Currency</span>
+                <DollarSign className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Currency</span>
               </div>
               <div className="flex items-center">
-                <span className="text-sm text-neutral-500 mr-2">{currency}</span>
+                <span className="text-xs sm:text-sm text-neutral-500 mr-2">{currency}</span>
                 <ChevronRight className="text-neutral-400" size={16} />
               </div>
             </button>
@@ -160,53 +153,53 @@ export const Settings = () => {
         </div>
 
         {/* Security Section */}
-        <div className="mt-4">
+        <div className="mt-3 sm:mt-4">
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <button
               onClick={() => {
                 // TODO: Navigate to change password page
                 console.log('Navigate to Change Password');
               }}
-              className="w-full flex items-center justify-between px-4 py-3 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
-                <Lock className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Change Password</span>
+                <Lock className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Change Password</span>
               </div>
               <ChevronRight className="text-neutral-400" size={16} />
             </button>
-            <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100">
+            <div className="flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 border-b border-neutral-100">
               <div className="flex items-center">
-                <Shield className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Two-Factor Auth</span>
+                <Shield className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Two-Factor Auth</span>
               </div>
               <button
                 onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
-                className={`relative inline-block w-12 h-6 rounded-full transition-colors ${
+                className={`relative inline-block w-10 h-5 sm:w-12 sm:h-6 rounded-full transition-colors ${
                   twoFactorEnabled ? 'bg-neutral-500' : 'bg-neutral-300'
                 }`}
               >
                 <div
-                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                    twoFactorEnabled ? 'right-1' : 'left-1'
+                  className={`absolute top-0.5 sm:top-1 w-4 h-4 sm:w-4 sm:h-4 bg-white rounded-full transition-transform ${
+                    twoFactorEnabled ? 'right-0.5 sm:right-1' : 'left-0.5 sm:left-1'
                   }`}
                 />
               </button>
             </div>
-            <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5">
               <div className="flex items-center">
-                <Fingerprint className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Biometric Login</span>
+                <Fingerprint className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Biometric Login</span>
               </div>
               <button
                 onClick={() => setBiometricEnabled(!biometricEnabled)}
-                className={`relative inline-block w-12 h-6 rounded-full transition-colors ${
+                className={`relative inline-block w-10 h-5 sm:w-12 sm:h-6 rounded-full transition-colors ${
                   biometricEnabled ? 'bg-neutral-500' : 'bg-neutral-300'
                 }`}
               >
                 <div
-                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                    biometricEnabled ? 'right-1' : 'left-1'
+                  className={`absolute top-0.5 sm:top-1 w-4 h-4 sm:w-4 sm:h-4 bg-white rounded-full transition-transform ${
+                    biometricEnabled ? 'right-0.5 sm:right-1' : 'left-0.5 sm:left-1'
                   }`}
                 />
               </button>
@@ -215,18 +208,18 @@ export const Settings = () => {
         </div>
 
         {/* Support Section */}
-        <div className="mt-4">
+        <div className="mt-3 sm:mt-4">
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <button
               onClick={() => {
                 // TODO: Navigate to help center page
                 console.log('Navigate to Help Center');
               }}
-              className="w-full flex items-center justify-between px-4 py-3 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
-                <HelpCircle className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Help Center</span>
+                <HelpCircle className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Help Center</span>
               </div>
               <ChevronRight className="text-neutral-400" size={16} />
             </button>
@@ -235,11 +228,11 @@ export const Settings = () => {
                 // TODO: Navigate to contact support page
                 console.log('Navigate to Contact Support');
               }}
-              className="w-full flex items-center justify-between px-4 py-3 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
-                <MessageCircle className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Contact Support</span>
+                <MessageCircle className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Contact Support</span>
               </div>
               <ChevronRight className="text-neutral-400" size={16} />
             </button>
@@ -248,11 +241,11 @@ export const Settings = () => {
                 // TODO: Navigate to terms & privacy page
                 console.log('Navigate to Terms & Privacy');
               }}
-              className="w-full flex items-center justify-between px-4 py-3 hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 hover:bg-neutral-50 transition-colors"
             >
               <div className="flex items-center">
-                <FileText className="text-neutral-600 w-6" size={18} />
-                <span className="ml-3 text-sm text-neutral-900">Terms & Privacy</span>
+                <FileText className="text-neutral-600 w-5 sm:w-6" size={18} />
+                <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-neutral-900">Terms & Privacy</span>
               </div>
               <ChevronRight className="text-neutral-400" size={16} />
             </button>
@@ -260,21 +253,22 @@ export const Settings = () => {
         </div>
 
         {/* Logout Section */}
-        <div className="mt-6 mb-6">
+        <div className="mt-4 sm:mt-6 mb-4 sm:mb-6">
           <button
             onClick={handleSignOut}
-            className="w-full bg-white border-2 border-neutral-600 text-neutral-600 py-4 rounded-xl hover:bg-neutral-50 transition-colors font-semibold"
+            className="w-full bg-white border-2 border-neutral-600 text-neutral-600 py-3 sm:py-4 rounded-xl hover:bg-neutral-50 transition-colors font-semibold text-sm sm:text-base"
           >
             Log Out
           </button>
         </div>
-      </main>
+        </div>
+      </Container>
 
       {/* Currency Modal */}
       <CurrencyModal 
         isOpen={showCurrencyModal} 
         onClose={() => setShowCurrencyModal(false)} 
       />
-    </div>
+    </Layout>
   );
 };

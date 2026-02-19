@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
 import { authService } from '../lib/api/services/auth';
+import { kycService } from '../lib/api/services/kyc';
 import { tokenManager } from '../lib/api/client';
-import { User, AuthContextType } from '../types';
+import { User, AuthContextType, KYCData } from '../types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -20,6 +21,8 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [kycStatus, setKycStatus] = useState<'not_started' | 'in_progress' | 'submitted' | 'pending' | 'approved' | 'rejected'>('not_started');
+  const [kycData, setKycData] = useState<KYCData | null>(null);
 
   // Mock data implementation
   const fetchUserProfileMock = async (userId: string): Promise<User | null> => {
@@ -222,10 +225,78 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await authService.logout();
     }
     setUser(null);
+    setKycStatus('not_started');
+    setKycData(null);
+  };
+
+  /**
+   * Refresh KYC status from backend
+   * Fetches the latest KYC data and updates the context
+   */
+  const refreshKYCStatus = async () => {
+    try {
+      if (USE_MOCK_DATA) {
+        // Mock mode: use default status from user profile
+        if (user?.kyc_status) {
+          setKycStatus(user.kyc_status as any);
+        }
+        return;
+      }
+
+      // Real API mode: fetch KYC records
+      const kycRecords = await kycService.listKYC();
+      
+      if (kycRecords && kycRecords.length > 0) {
+        // Get the most recent KYC record
+        const latestKyc = kycRecords[0];
+        setKycData(latestKyc);
+        
+        // Update status based on KYC data
+        if (latestKyc.status) {
+          setKycStatus(latestKyc.status);
+        } else if (latestKyc.kyc_confirmed) {
+          setKycStatus('approved');
+        } else if (latestKyc.kyc_submitted) {
+          setKycStatus('submitted');
+        } else {
+          setKycStatus('in_progress');
+        }
+      } else {
+        // No KYC records found
+        setKycStatus('not_started');
+        setKycData(null);
+      }
+    } catch (error: any) {
+      console.error('Error refreshing KYC status:', error);
+      // On error, maintain current status or default to not_started
+      if (error.status === 404) {
+        setKycStatus('not_started');
+        setKycData(null);
+      }
+    }
+  };
+
+  /**
+   * Update KYC status manually
+   * Used after successful KYC submission or status changes
+   */
+  const updateKYCStatus = (status: 'not_started' | 'in_progress' | 'submitted' | 'pending' | 'approved' | 'rejected') => {
+    setKycStatus(status);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signUp, signIn, signOut, refreshUser }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      kycStatus, 
+      kycData, 
+      signUp, 
+      signIn, 
+      signOut, 
+      refreshUser,
+      refreshKYCStatus,
+      updateKYCStatus
+    }}>
       {children}
     </AuthContext.Provider>
   );

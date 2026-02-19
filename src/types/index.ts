@@ -136,10 +136,14 @@ export interface Notification {
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
+  kycStatus: 'not_started' | 'in_progress' | 'submitted' | 'pending' | 'approved' | 'rejected';
+  kycData: KYCData | null;
   signUp: (email: string, password: string, fullName: string, referralCode?: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  refreshKYCStatus: () => Promise<void>;
+  updateKYCStatus: (status: 'not_started' | 'in_progress' | 'submitted' | 'pending' | 'approved' | 'rejected') => void;
 }
 
 export interface GoalFormData {
@@ -156,4 +160,44 @@ export interface KYCFormData {
   id_number: string;
   address: string;
   document: File | null;
+}
+
+export interface KYCData {
+  membership_number?: string;
+  user?: number;
+  id_number: string;
+  kra_pin: string;
+  gender: 'male' | 'female' | 'other';
+  marital_status: 'married' | 'single' | 'other';
+  country: string;
+  county: string;
+  kyc_submitted: boolean;
+  kyc_confirmed: boolean;
+  status?: 'not_started' | 'in_progress' | 'submitted' | 'pending' | 'approved' | 'rejected';
+  rejection_reason?: string;
+  id_document_front?: File | string;
+  id_document_back?: File | string;
+  selfie_photo?: File | string;
+  created_at?: string;
+  updated_at?: string;
+  submitted_at?: string;
+  reviewed_at?: string;
+}
+
+export interface NextOfKinData {
+  id?: number;
+  kyc: string; // membership_number reference
+  full_name: string;
+  relationship: string;
+  phone_number: string;
+  email?: string;
+  address?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface APIError extends Error {
+  status: number;
+  code: string;
+  fieldErrors?: Record<string, string[]>;
 }

@@ -74,6 +74,14 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
     
+    // Handle 403 Forbidden - Access denied
+    if (error.response?.status === 403) {
+      // Don't retry, just reject with the error
+      // The calling code should handle displaying the access denied message
+      console.error('Access denied (403):', error.response.data);
+      return Promise.reject(error);
+    }
+    
     // If error is 401 and we haven't retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -99,6 +107,7 @@ apiClient.interceptors.response.use(
       
       if (!refreshToken) {
         // No refresh token, clear tokens and redirect to login
+        console.error('No refresh token available, redirecting to login');
         tokenManager.clearTokens();
         window.location.href = '/login';
         return Promise.reject(error);
@@ -106,6 +115,7 @@ apiClient.interceptors.response.use(
       
       try {
         // Attempt to refresh the token
+        console.log('Attempting to refresh access token');
         const response = await axios.post(
           `${API_BASE_URL}${API_VERSION}/auth/token/refresh/`,
           { refresh: refreshToken }
@@ -113,6 +123,7 @@ apiClient.interceptors.response.use(
         
         const { access } = response.data;
         tokenManager.setTokens(access, refreshToken);
+        console.log('Access token refreshed successfully');
         
         // Update the failed request with new token
         if (originalRequest.headers) {
@@ -124,6 +135,7 @@ apiClient.interceptors.response.use(
         
         return apiClient(originalRequest);
       } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
         processQueue(refreshError as Error, null);
         tokenManager.clearTokens();
         window.location.href = '/login';
